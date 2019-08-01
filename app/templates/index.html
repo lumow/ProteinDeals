@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h2>Aktuella priser</h2>
+    {% for category in categories %}
+        <h3>{{ category.name }}</h3>
+        <table class="table table-hover table-striped table-responsive">
+            <thead>
+            <tr>
+                <td>Tillverkare</td>
+                <td>Produkt</td>
+                <td>Storlek (g)</td>
+                <td>Protein (g)</td>
+                <td>Pris (kr)</td>
+                <td>Protein/kr (g)</td>
+                <td>Senast uppdaterad</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                {% if product.get_latest_price() != None and product.category_id == category.id %}
+                    <tr>
+                        <td><a href={{ product.url }}>{{ product.maker }}</a></td>
+                        <td><a href={{ product.url }}>{{ product.name }}</a></td>
+                        <td><a href={{ product.url }}>{{ product.weight }}</a></td>
+                        <td><a href={{ product.url }}>{{ product.protein_content }}</a></td>
+                        <td><a href={{ product.url }}>{{ product.get_latest_price().price | round(2) }}</a></td>
+                        <td>
+                            <a href={{ product.url }}>{{ (product.protein_content / product.get_latest_price().price) | round(2) }}</a>
+                        </td>
+                        <td>
+                            <a href={{ product.url }}>{{ moment(product.get_latest_price().date).format('YYYY-MM-DD HH:mm') }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+{% endblock %}

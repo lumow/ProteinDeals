@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <h2>Produkter</h2>
+    {% for category in categories %}
+        <h3>{{ category.name }}</h3>
+        <table class="table table-hover table-striped table-responsive">
+            <thead>
+            <tr>
+                <td>Tillverkare</td>
+                <td>Produkt</td>
+                <td>Storlek (g)</td>
+                <td>Protein (g)</td>
+                <td>Pris (kr)</td>
+                <td>Protein/kr (g)</td>
+                <td>Senast uppdaterad</td>
+                <td>Ändra</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                {% if product.get_latest_price() != None and product.category_id == category.id %}
+                    <tr>
+                        <td>{{ product.maker }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.weight }}</td>
+                        <td>{{ product.protein_content }}</td>
+                        <td>{{ product.get_latest_price().price | round(2) }}</td>
+                        <td>{{ (product.protein_content / product.get_latest_price().price) | round(2) }}</td>
+                        <td>{{ moment(product.get_latest_price().date).format('YYYY-MM-DD HH:mm') }}</td>
+                        <td><a href={{ url_for('main.product', product_id=product.id) }}>Ändra</a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+{% endblock %}
